@@ -40,13 +40,11 @@ app.get("/api/alltasks/:user", async function (req, res) {
 
     if (temp) {
         const chars = await Tasks.find({ routeName: temp });
-        console.log(chars)
-        return res.json({usuario: temp, tareas: chars});
+        console.log(chars);
+        return res.json({ usuario: temp, tareas: chars });
     } else {
         return res.json({ msg: "No se encontraron personajes con ese nombre" });
     }
-
-    
 });
 
 app.post("/api/deletetask", async function (req, res) {
@@ -129,7 +127,6 @@ app.get("/api/tasks/:user", async function (req, res) {
 
     console.log("user?", chosen);
     console.log(chosen);
-    
 
     const chars = await Tasks.find({ name: chosen });
 
@@ -175,25 +172,33 @@ app.post("/api/checkUser", async function (req, res) {
     console.log(checkedUser.password);
 
     const exist = await usersDb.findOne({ mail: checkedUser.email });
-
-    bcrypt.compare(
-        checkedUser.password,
-        exist.password,
-        function (err, result) {
-            const resultTemp = result;
-            console.log(resultTemp);
-            console.log(exist);
-            var token = jwt.sign({ email: checkedUser.email }, "SECRETPASS");
-            console.log(token);
-            if (exist && resultTemp) {
-                return res.json({ conf: true, jwtToken: token });
-            } else {
-                return res.json({
-                    conf: false,
-                });
+    if (exist) {
+        bcrypt.compare(
+            checkedUser.password,
+            exist.password,
+            function (err, result) {
+                const resultTemp = result;
+                console.log(resultTemp);
+                console.log(exist);
+                var token = jwt.sign(
+                    { email: checkedUser.email },
+                    "SECRETPASS"
+                );
+                console.log(token);
+                if (exist && resultTemp) {
+                    return res.json({ conf: true, jwtToken: token });
+                } else {
+                    return res.json({
+                        conf: false,
+                    });
+                }
             }
-        }
-    );
+        );
+    } else {
+        return res.json({
+            conf: false,
+        });
+    }
 });
 
 app.post("/api/tasks", async function (req, res) {
