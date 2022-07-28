@@ -129,7 +129,7 @@ app.get("/api/tasks/:user", async function (req, res) {
 
     console.log("user?", chosen);
     console.log(chosen);
-    id(req.)
+    
 
     const chars = await Tasks.find({ name: chosen });
 
